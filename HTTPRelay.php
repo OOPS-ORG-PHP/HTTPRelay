@@ -6,6 +6,9 @@
  * HTTPRelay 패키지는 HTTP 요청을 간단하게 하거나 또는 HTTP
  * 요청을 다른 서버로 Relay를 하기 위한 기능을 제공한다.
  *
+ * 예제:
+ * {@example pear_HTTPRelay/tests/test.php}
+ *
  * @category    HTTP
  * @package     HTTPRelay
  * @author      JoungKyun.Kim <http://oops.org>
@@ -27,6 +30,9 @@ HTTPRelay_REQUIRES ();
  * HTTPRelay 패키지는 HTTP 요청을 간단하게 하거나 또는 HTTP
  * 요청을 다른 서버로 Relay를 하기 위한 기능을 제공한다.
  *
+ * 예제:
+ * {@example pear_HTTPRelay/tests/test.php}
+ *
  * @package HTTPRelay
  */
 Class HTTPRelay {
@@ -39,23 +45,35 @@ Class HTTPRelay {
 	 * @access public
 	 */
 	/**
-	 * 에러 메시지 저장
+	 * 에러 발생시에 에러 메시지 저장
 	 * @var string
 	 */
 	static public $error = '';
 	/**
-	 * HTTP 요청 결과 저장
+	 * HTTP 요청 정보 결과 저장
 	 * @var array
 	 */
 	public $info = null;
 	/**
 	 * Post data encoding type
+	 *
+	 * Post data를 어떤 방식으로 인코딩 할지를 결정한다.
+	 * 'url-encode'와 'form-data' 둘 중의 하나로 지정을 해야 한다.
+	 * Post data에 파일 전송을 하기 위해서는 무조건 'form-data'로
+	 * 지정을 해야 한다.
+	 *
 	 * @var string
 	 */
 	public $posttype = 'url-encode';
 	/**#@-*/
 	/**
 	 * User Define Header
+	 *
+	 * 사용자 Request header를 배열로 지정한다.
+	 * 배열 키는 Header Name으로 지정하며, 배열값에는 Header의 값을 지정한다.
+	 * 배열값을 '-'으로 지정을 하면, 빈 값으로 처리를 한다.
+	 *
+	 * {@example pear_HTTPRelay/tests/test-relay.php 30 1}
 	 *
 	 * @access private
 	 * @var array
@@ -67,18 +85,24 @@ Class HTTPRelay {
 	/**
 	 * HTTPRelay 초기화
 	 *
+	 * 예제:
+	 * {@example pear_HTTPRelay/tests/test-relay.php 23 6}
+	 *
 	 * @access public
-	 * @param array $header 사용자 정의 HTTP Header
+	 * @param array $header (optional) 사용자 정의 HTTP Header
 	 *   - Key는 Header 이름이엉야 하며 '-'는 '_'로 표기한다.
 	 *   - Heder값이 없어야 할 경우에는 값을 '-'로 넣어준다.
 	 *   - Key값에 POSTTYPE을 지정할 경우, Post encoding 방식을
 	 *     직접 지정이 가능하다. 이 경우 POSTTYPE은 HTTP Header
 	 *     에 영향을 주지 않으며, 값으로는 'form-data'와 'url-encode'
-	 *     중에 지정할 수 있다.
+	 *     중에 지정할 수 있다. POSTTYPE은 제거될 예정이니 $posttype
+	 *     property를 직접 설정하여야 한다.
+	 *
 	 */
 	function __construct ($header = null) {
 		$this->error = &self::$error;
 
+		// deprecated soon
 		if ( $header['POSTTYPE'] ) {
 			switch ($header['POSTTYPE']) {
 				case 'form-data' :
@@ -87,6 +111,7 @@ Class HTTPRelay {
 			}
 			unset ($header['POSTTYPE']);
 		}
+		// deprecated soon
 
 		if ( is_array ($header) )
 			$this->header = &$header;
@@ -97,13 +122,16 @@ Class HTTPRelay {
 	/**
 	 * HTML 요청의 결과를 반환한다.
 	 *
+	 * 예제:
+	 * {@example pear_HTTPRelay/tests/test.php}
+	 *
 	 * @access public
 	 * @return string
 	 * @param  string $to        요청할 URL
-	 * @param  int    $tmout     timeout 값
-	 * @param  string $httphost  HTTP/1.1 Host Header. 지정을 하지 않을 경우
+	 * @param  int    $tmout     (optional) timeout 값
+	 * @param  string $httphost  (optional) HTTP/1.1 Host Header. 지정을 하지 않을 경우
 	 *                           $to의 도메인으로 지정됨
-	 * @param  array  $post      Post방식으로 요청시 전송할 Post data
+	 * @param  array  $post      (optional) Post방식으로 요청시 전송할 Post data
 	 */
 	public function fetch ($to, $tmout = 60, $httphost = '', $post = null) {
 		if ( ! trim ($to) )
@@ -153,11 +181,14 @@ Class HTTPRelay {
 	/**
 	 * HTML 요청을 다른 호스트로 중계를 한다.
 	 *
+	 * 예제:
+	 * {@example pear_HTTPRelay/tests/test.php}
+	 *
 	 * @access public
 	 * @return string
 	 * @param  string $to        중계할 URL
-	 * @param  int    $tmout     timeout 값
-	 * @param  string $httphost  HTTP/1.1 Host Header. 지정을 하지 않을 경우
+	 * @param  int    $tmout     (optional) timeout 값
+	 * @param  string $httphost  (optional) HTTP/1.1 Host Header. 지정을 하지 않을 경우
 	 *                           $to의 도메인으로 지정됨
 	 */
 	public function relay ($to, $tmout = 60, $httphost = '') {
@@ -240,7 +271,7 @@ Class HTTPRelay {
 	}
 	// }}}
 
-	// {{{ +-- private (void) set_header (&$h, $d, $v, $noval = false)
+	// {{{ +-- private (void) set_header (&$h, $d, $v)
 	/**
 	 * 헤더를 셋팅한다. 헤더 값이 '-'로 지정이 될 경우, 해당 헤더는
 	 * 빈 값을 가지는 헤더로 처리를 한다.
@@ -251,7 +282,7 @@ Class HTTPRelay {
 	 * @param string 헤더 이름
 	 * @param string 헤더 값. '-' 값을 가지면, 빈 값을 가지는 헤더라는 의미로 처리된다.
 	 */
-	private function set_header (&$h, $d, $v, $noval = false) {
+	private function set_header (&$h, $d, $v) {
 		if ( ! trim ($d) || ! trim ($v) )
 			return;
 
@@ -289,7 +320,7 @@ Class HTTPRelay {
 	}
 	// }}}
 
-	// {{{ +-- public (void) relay_post (&$c)
+	// {{{ +-- private (void) relay_post (&$c)
 	/**
 	 * Post로 넘어온 Data를 relay하기 위한 post data template
 	 *
@@ -297,7 +328,7 @@ Class HTTPRelay {
 	 * @return void
 	 * @param resource CURL resource
 	 */
-	function relay_post (&$c) {
+	private function relay_post (&$c) {
 		if ( $_SERVER['REQUEST_METHOD'] != 'POST' )
 			return;
 
@@ -324,7 +355,7 @@ Class HTTPRelay {
 	 * @access private
 	 * @return void
 	 * @param array 헤더 저장 변수
-	 * @param string IP 주소
+	 * @param string (optional) IP 주소
 	 */
 	private function client_ip_set (&$h, $ip = null) {
 		if ( php_sapi_name () == 'cli' )
@@ -346,6 +377,12 @@ Class HTTPRelay {
 }
 
 // {{{ +-- public HTTPRelay_REQUIRES (void)
+/**
+ * HTTRelay 패키지에서 필요한 의존성을 검사한다.
+ *
+ * @access public
+ * @return void
+ */
 function HTTPRelay_REQUIRES () {
 	$br = PHP_EOL;
 	if ( PHP_SAPI != 'cli' )

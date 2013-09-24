@@ -20,7 +20,12 @@ require_once 'HTTPRelay.php';
 set_error_handler('myException::myErrorHandler');
 
 try {
-	$http = new HTTPRelay;
+	$header = array (
+		'X_REQ_HEADER' => 'addtional request header',
+		'X_REQ_HEADER2' => 'addtional request header 2'
+	);
+
+	$http = new HTTPRelay ($header);
 	// you can set 'form-data' or 'url-encode'
 	$http->posttype = 'form-data';
 
