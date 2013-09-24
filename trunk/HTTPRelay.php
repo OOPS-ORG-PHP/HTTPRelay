@@ -17,6 +17,9 @@
  * @filesource
  */
 
+/**
+ * import myException API
+ */
 @require_once 'myException.php';
 HTTPRelay_REQUIRES ();
 
@@ -270,7 +273,7 @@ Class HTTPRelay {
 	 * Hostname (2번째 인자)가 따로 지정되지 않으면 주어진 Full URL(1번째 인자)
 	 * 에서 hostname을 구한다.
 	 *
-	 * @acces private
+	 * @access private
 	 * @return string
 	 * @param string   전체 URL  
 	 * @param string   HTTP/1.1 Host header 값
@@ -318,7 +321,7 @@ Class HTTPRelay {
 	/**
 	 * Relay를 위한 Client IP 주소 설정
 	 *
-	 * @acces private
+	 * @access private
 	 * @return void
 	 * @param array 헤더 저장 변수
 	 * @param string IP 주소
