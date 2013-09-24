@@ -147,7 +147,6 @@ Class HTTPRelay {
 
 		# basic information
 		$uri = trim ($_SERVER['QUERY_STRING']);
-		$lang = $this->alang ? $this->alang : $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 
 		if ( $uri )
 			$uri = '?' . $uri;
