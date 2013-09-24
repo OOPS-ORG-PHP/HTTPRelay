@@ -14,7 +14,7 @@
 	<date>@curdate@</date>
 	<time>@curtime@</time>
 	<version>
-		<release>1.0.0</release>
+		<release>1.0.1</release>
 		<api>1.0.0</api>
 	</version>
 	<stability>
@@ -22,7 +22,9 @@
 		<api>stable</api>
 	</stability>
 	<license>BSD</license>
-	<notes>* 1.0.0 release
+	<notes>* 1.0.1 release
+* fixed typo CURL_FAILONERROR to CURLOPT_FAILONERROR
+* add myException dependency
 </notes>
 	<contents>
 		<dir name="/">
@@ -38,13 +40,30 @@
 				<min>1.4.3</min>
 			</pearinstaller>
 			<package>
-				<name>curl</name>
-				<channel>php</channel>
+				<name>myException</name>
+				<channel>pear.oops.org</channel>
+				<min>1.0.1</min>
 			</package>
 		</required>
 	</dependencies>
 	<phprelease />
 	<changelog>
+		<release>
+			<version>
+				<release>1.0.1</release>
+				<api>1.0.0</api>
+			</version>
+			<stability>
+				<release>stable</release>
+				<api>stable</api>
+			</stability>
+			<date>@curdate@</date>
+			<license>BSD</license>
+			<notes>* release 1.0.1
+* fixed typo CURL_FAILONERROR to CURLOPT_FAILONERROR
+* add myException dependency
+</notes>
+		</release>
 		<release>
 			<version>
 				<release>1.0.0</release>
@@ -54,7 +73,7 @@
 				<release>stable</release>
 				<api>stable</api>
 			</stability>
-			<date>@curdate@</date>
+			<date>2013-09-24 01:49:04</date>
 			<license>BSD</license>
 			<notes>* release 1.0.0
 </notes>
