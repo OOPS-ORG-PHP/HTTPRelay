@@ -45,6 +45,11 @@ Class HTTPRelay {
 	 * @var array
 	 */
 	public $info = null;
+	/**
+	 * Post data encoding type
+	 * @var string
+	 */
+	public $posttype = 'url-encode';
 	/**#@-*/
 	/**
 	 * User Define Header
@@ -61,9 +66,25 @@ Class HTTPRelay {
 	 *
 	 * @access public
 	 * @param array $header 사용자 정의 HTTP Header
+	 *   - Key는 Header 이름이엉야 하며 '-'는 '_'로 표기한다.
+	 *   - Heder값이 없어야 할 경우에는 값을 '-'로 넣어준다.
+	 *   - Key값에 POSTTYPE을 지정할 경우, Post encoding 방식을
+	 *     직접 지정이 가능하다. 이 경우 POSTTYPE은 HTTP Header
+	 *     에 영향을 주지 않으며, 값으로는 'form-data'와 'url-encode'
+	 *     중에 지정할 수 있다.
 	 */
 	function __construct ($header = null) {
 		$this->error = &self::$error;
+
+		if ( $header['POSTTYPE'] ) {
+			switch ($header['POSTTYPE']) {
+				case 'form-data' :
+				case 'url-encode' :
+					$this->posttype = $header['POSTTYPE'];
+			}
+			unset ($header['POSTTYPE']);
+		}
+
 		if ( is_array ($header) )
 			$this->header = &$header;
 	}
@@ -106,11 +127,8 @@ Class HTTPRelay {
 
 		if ( $post && is_array ($post) ) {
 			curl_setopt ($c, CURLOPT_POST, 1);
-			if ( $post['type'] != 'form-data' ) {
-				unset ($post['type']);
+			if ( $this->posttype == 'url-encode' )
 				$post = http_build_query ($post);
-			} else
-				unset ($post['type']);
 			curl_setopt ($c, CURLOPT_POSTFIELDS, $post);
 		}
 
@@ -282,14 +300,13 @@ Class HTTPRelay {
 
 		$post = array ();
 
-		$posttype = 'url-encode';
 		if ( is_array ($_FILES['file']) ) {
 			$post['file'] = "@{$_FILES['file']['tmp_name']}";
-			$posttype = 'form-data';
+			$this->posttype = 'form-data';
 		}
 		$post = array_merge ($post, $_POST);
 
-		if ( $posttype == 'url-encode' )
+		if ( $thiss->posttype == 'url-encode' )
 			$post = http_build_query ($post);
 
 		curl_setopt ($c, CURLOPT_POST, 1);
