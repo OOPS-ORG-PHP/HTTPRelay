@@ -17,6 +17,7 @@
  * @filesource
  */
 
+@require_once 'myException.php';
 HTTPRelay_REQUIRES ();
 
 /**
@@ -326,20 +327,37 @@ Class HTTPRelay {
 
 // {{{ +-- public HTTPRelay_REQUIRES (void)
 function HTTPRelay_REQUIRES () {
+	$br = PHP_EOL;
+	if ( PHP_SAPI != 'cli' )
+		$br = '<br>' . PHP_EOL;
+	$brbr = $br . $br;
+
+	if ( ! class_exists ('myException') ) {
+		$msg = $brbr .
+			'-------------------------------------------------' . $brbr .
+			'HTTPRelay ERROR!' . $brbr .
+			'HTTPRelay class needs oops/myException pear package' . $br .
+			'You can get myException pear package at' . $br .
+			'http://mirror.oops.org/pub/oops/php/pear/myException/' . $br .
+			'Also you can install with pear command as follow command' . $br .
+			'shell> pear channel-discover pear.oops.org' . $br .
+			'shell> pear install oops/myException' . $brbr .
+			'-------------------------------------------------' . $brbr;
+		throw new Exception ($msg, E_USER_ERROR);
+	}
+
 	if ( ! extension_loaded ('curl') ) {
 		$br = PHP_EOL;
 		if ( PHP_SAPI != 'cli' )
 			$br = '<br>' . PHP_EOL;
 		$brbr = $br . $br;
 
-		$msg = sprintf (
-			$brbr .
+		$msg = $brbr .
 			'-------------------------------------------------' . $brbr .
-			'HTTPRelay ERROR!' . $brbr .
+			'HTTPRelay ERROR!' . $br .
 			'HTTPRelay class needs curl extension' . $brbr .
-			'-------------------------------------------------' . $brbr
-		);
-		throw new Exception ($msg, E_USER_ERROR);
+			'-------------------------------------------------' . $brbr;
+		throw new myException ($msg, E_USER_ERROR);
 	}
 }
 // }}}
