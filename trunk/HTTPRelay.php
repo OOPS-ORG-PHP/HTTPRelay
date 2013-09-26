@@ -118,6 +118,71 @@ Class HTTPRelay {
 	}
 	// }}}
 
+	/**
+	 * HTTP/1.1 HEAD 요청
+	 *
+	 * 예제:
+	 * {@example pear_HTTPRelay/tests/test-head.php}
+	 *
+	 * @access public
+	 * @return stdClass 
+	 * @param  string $to        요청할 URL
+	 * @param  int    $tmout     (optional) timeout 값
+	 * @param  string $httphost  (optional) HTTP/1.1 Host Header. 지정을 하지 않을 경우
+	 *                           $to의 도메인으로 지정됨
+	 * @sinse 1.0.2
+	 */
+	public function head ($to, $tmout = 60, $httphost = '') {
+		if ( ! trim ($to) )
+			return null;
+
+		if ( ! is_resource ($c = curl_init ()) )
+			return null;
+
+		# header information
+		$header = self::http_header ();
+
+		curl_setopt ($c, CURLOPT_URL, $to);
+		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
+		curl_setopt ($c, CURLOPT_NOPROGRESS, 1);
+		curl_setopt ($c, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt (
+			$c, CURLOPT_USERAGENT,
+			$this->header['User_Agent'] ? $this->header['User_Agent'] : self::UAGENT
+		);
+		curl_setopt ($c, CURLOPT_HEADER, 1);
+		curl_setopt ($c, CURLOPT_NOBODY, 1);
+		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
+		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
+		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
+
+		$data = curl_exec ($c);
+
+		if ( curl_errno ($c) ) {
+			self::$error = curl_error ($c);
+			return false;
+		}
+
+		$this->info = curl_getinfo ($c);
+		curl_close ($c);
+
+		$r = new stdClass;
+		$content = preg_split ('/\r\n/', trim ($data));
+		foreach ( $content as $v ) {
+			$v = trim ($v);
+			if ( preg_match ('!^HTTP/([0-9.]+) ([0-9]+) (.*)!', $v, $matches) ) {
+				$r->{'VERSION'} = $matches[1];
+				$r->{'RETURN-CODE'} = $matches[2];
+				$r->{'RETURN-MSG'} = $matches[3];
+				continue;
+			}
+			$tmp = preg_split ('/:[\s]+/', $v);
+			$r->{$tmp[0]} = $tmp[1];
+		}
+
+		return $r;
+	}
+
 	// {{{ +-- public (string) fetch ($to, $tmout = 60, $httphost = '', $post = null)
 	/**
 	 * HTML 요청의 결과를 반환한다.
@@ -135,10 +200,10 @@ Class HTTPRelay {
 	 */
 	public function fetch ($to, $tmout = 60, $httphost = '', $post = null) {
 		if ( ! trim ($to) )
-			return '';
+			return null;
 
 		if ( ! is_resource ($c = curl_init ()) )
-			return '';
+			return null;
 
 		# header information
 		$header = self::http_header ();
@@ -155,6 +220,7 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_NOBODY, 0);
 		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
+		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
 
 		if ( $post && is_array ($post) ) {
 			curl_setopt ($c, CURLOPT_POST, 1);
@@ -193,10 +259,10 @@ Class HTTPRelay {
 	 */
 	public function relay ($to, $tmout = 60, $httphost = '') {
 		if ( ! trim ($to) )
-			return '';
+			return null;
 
 		if ( ! is_resource ($c = curl_init ()) )
-			return '';
+			return null;
 
 		# basic information
 		$uri = trim ($_SERVER['QUERY_STRING']);
@@ -219,6 +285,7 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_NOBODY, 0);
 		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
+		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
 
 		self::relay_post ($c);
 
