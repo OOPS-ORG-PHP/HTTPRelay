@@ -315,7 +315,7 @@ Class HTTPRelay {
 			if ( $name == 'User_Agent' )
 				continue;
 
-			self::set_header ($header, $name);
+			self::set_header ($header, $name, $val);
 		}
 
 		if ( ! $this->header['Host'] )

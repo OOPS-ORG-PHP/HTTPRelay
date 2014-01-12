@@ -11,10 +11,10 @@
 		<email>joungkyun@gmail.com</email>
 		<active>yes</active>
 	</lead>
-	<date>2013-09-26</date>
-	<time>17:18:16</time>
+	<date>2014-01-13</date>
+	<time>03:32:53</time>
 	<version>
-		<release>1.0.2</release>
+		<release>1.0.3</release>
 		<api>1.0.0</api>
 	</version>
 	<stability>
@@ -22,12 +22,11 @@
 		<api>stable</api>
 	</stability>
 	<license>BSD</license>
-	<notes>* 1.0.2 release
-* add head method for requesting HTTP/1.1 HEAD method
+	<notes>* fixed missing 3th argument when call set_header method
 </notes>
 	<contents>
 		<dir name="/">
-			<file role="php" md5sum="afd5faee24c9a3ad1ca2da21a8ae79c0" name="HTTPRelay.php" />
+			<file role="php" md5sum="cf1e6aa6175557d0a58f248237720869" name="HTTPRelay.php" />
 		</dir>
 	</contents>
 	<dependencies>
@@ -47,6 +46,20 @@
 	</dependencies>
 	<phprelease />
 	<changelog>
+		<release>
+			<version>
+				<release>1.0.3</release>
+				<api>1.0.0</api>
+			</version>
+			<stability>
+				<release>stable</release>
+				<api>stable</api>
+			</stability>
+			<date>2014-01-13</date>
+			<license>BSD</license>
+			<notes>* fixed missing 3th argument when call set_header method
+</notes>
+		</release>
 		<release>
 			<version>
 				<release>1.0.2</release>
