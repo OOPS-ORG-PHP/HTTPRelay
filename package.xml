@@ -11,8 +11,8 @@
 		<email>joungkyun@gmail.com</email>
 		<active>yes</active>
 	</lead>
-	<date>2014-01-13</date>
-	<time>03:32:53</time>
+	<date>2014-01-25</date>
+	<time>17:27:34</time>
 	<version>
 		<release>1.0.3</release>
 		<api>1.0.0</api>
@@ -26,7 +26,7 @@
 </notes>
 	<contents>
 		<dir name="/">
-			<file role="php" md5sum="cf1e6aa6175557d0a58f248237720869" name="HTTPRelay.php" />
+			<file role="php" md5sum="84d5ba711547fdb6c560001f3cb0ba4b" name="HTTPRelay.php" />
 		</dir>
 	</contents>
 	<dependencies>
@@ -55,7 +55,7 @@
 				<release>stable</release>
 				<api>stable</api>
 			</stability>
-			<date>2014-01-13</date>
+			<date>2014-01-25</date>
 			<license>BSD</license>
 			<notes>* fixed missing 3th argument when call set_header method
 </notes>

@@ -12,7 +12,7 @@
  * @category    HTTP
  * @package     HTTPRelay
  * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 1997-2013 OOPS.org
+ * @copyright   (c) 2014 OOPS.org
  * @license     BSD License
  * @version     SVN: $Id$
  * @link        http://pear.oops.org/package/HTTPRelay
