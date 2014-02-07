@@ -407,7 +407,7 @@ Class HTTPRelay {
 		}
 		$post = array_merge ($post, $_POST);
 
-		if ( $thiss->posttype == 'url-encode' )
+		if ( $this->posttype == 'url-encode' )
 			$post = http_build_query ($post);
 
 		curl_setopt ($c, CURLOPT_POST, 1);
