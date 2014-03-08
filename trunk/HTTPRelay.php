@@ -139,6 +139,9 @@ Class HTTPRelay {
 		if ( ! is_resource ($c = curl_init ()) )
 			return null;
 
+		if ( $httphost )
+			$this->header['Host'] = $httphost;
+
 		# header information
 		$header = self::http_header ();
 
@@ -205,6 +208,9 @@ Class HTTPRelay {
 		if ( ! is_resource ($c = curl_init ()) )
 			return null;
 
+		if ( $httphost )
+			$this->header['Host'] = $httphost;
+
 		# header information
 		$header = self::http_header ();
 
@@ -263,6 +269,9 @@ Class HTTPRelay {
 
 		if ( ! is_resource ($c = curl_init ()) )
 			return null;
+
+		if ( $httphost )
+			$this->header['Host'] = $httphost;
 
 		# basic information
 		$uri = trim ($_SERVER['QUERY_STRING']);
