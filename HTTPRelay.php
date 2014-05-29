@@ -166,6 +166,8 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
 		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
+		if ( preg_match ('/^https:/', $to) )
+			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
 
 		$data = curl_exec ($c);
 
@@ -242,6 +244,8 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
 		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
+		if ( preg_match ('/^https:/', $to) )
+			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
 
 		if ( $post && is_array ($post) ) {
 			curl_setopt ($c, CURLOPT_POST, 1);
@@ -317,6 +321,8 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
 		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
+		if ( preg_match ('/^https:/', $to) )
+			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
 
 		self::relay_post ($c);
 
