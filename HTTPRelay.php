@@ -142,11 +142,16 @@ Class HTTPRelay {
 	 * @sinse 1.0.2
 	 */
 	public function head ($to, $tmout = 60, $httphost = '') {
-		if ( ! trim ($to) )
-			return null;
+		$to = trim ($to);
+		if ( ! $to ) {
+			self::$error = 'Empty request url';
+			return false;
+		}
 
-		if ( ! is_resource ($c = curl_init ()) )
-			return null;
+		if ( ! is_resource ($c = curl_init ()) ) {
+			self:$error = 'Failed initialize';
+			return false;
+		}
 
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
@@ -178,13 +183,14 @@ Class HTTPRelay {
 			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
 
 		$data = curl_exec ($c);
+		$this->info = curl_getinfo ($c);
 
 		if ( curl_errno ($c) ) {
 			self::$error = curl_error ($c);
+			curl_close ($c);
 			return false;
 		}
 
-		$this->info = curl_getinfo ($c);
 		curl_close ($c);
 
 		$r = new stdClass;
@@ -220,11 +226,16 @@ Class HTTPRelay {
 	 * @param  array  $post      (optional) Post방식으로 요청시 전송할 Post data
 	 */
 	public function fetch ($to, $tmout = 60, $httphost = '', $post = null) {
-		if ( ! trim ($to) )
-			return null;
+		$to = trim ($to);
+		if ( ! $to ) {
+			self::$error = 'Empty request url';
+			return false;
+		}
 
-		if ( ! is_resource ($c = curl_init ()) )
-			return null;
+		if ( ! is_resource ($c = curl_init ()) ) {
+			self:$error = 'Failed initialize';
+			return false;
+		}
 
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
@@ -263,13 +274,14 @@ Class HTTPRelay {
 		}
 
 		$data = curl_exec ($c);
+		$this->info = curl_getinfo ($c);
 
 		if ( curl_errno ($c) ) {
 			self::$error = curl_error ($c);
+			curl_close ($c);
 			return false;
 		}
 
-		$this->info = curl_getinfo ($c);
 		curl_close ($c);
 
 		return trim ($data);
@@ -291,11 +303,17 @@ Class HTTPRelay {
 	 *                           $to의 도메인으로 지정됨
 	 */
 	public function relay ($to, $tmout = 60, $httphost = '') {
-		if ( ! trim ($to) )
-			return null;
+		$to = trim ($to);
+		if ( ! $to ) {
+			self::$error = 'Empty request url';
+			return false;
+		}
 
-		if ( ! is_resource ($c = curl_init ()) )
-			return null;
+		if ( ! is_resource ($c = curl_init ()) ) {
+			self:$error = 'Failed initialize';
+			return false;
+		}
+
 
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
@@ -335,13 +353,14 @@ Class HTTPRelay {
 		self::relay_post ($c);
 
 		$data = curl_exec ($c);
+		$this->info = curl_getinfo ($c);
 
 		if ( curl_errno ($c) ) {
 			self::$error = curl_error ($c);
+			curl_close ($c);
 			return false;
 		}
 
-		$this->info = curl_getinfo ($c);
 		curl_close ($c);
 
 		return trim ($data);
