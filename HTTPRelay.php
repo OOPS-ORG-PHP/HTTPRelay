@@ -381,7 +381,7 @@ Class HTTPRelay {
 	 */
 	private function http_host ($t, $h) {
 		if ( ! $h) {
-			$src = array ('!^http://!', '!/.*!');
+			$src = array ('!^https?://!', '!/.*!');
 			$dsc = array ('', '');
 			$h = preg_replace ($src, $dsc, $t);
 		}
