@@ -51,6 +51,10 @@ Class HTTPRelay {
 	static public $error = '';
 	/**
 	 * HTTP 요청 정보 결과 저장
+	 *
+	 * 1.0.5 부터는 30x 반환시에 redirect를 내부 처리를 하며,
+	 * 이 경우, $info는 2차 배열로 referer의 info 정보를 보관한다.
+	 *
 	 * @var array
 	 */
 	public $info = null;
@@ -88,6 +92,15 @@ Class HTTPRelay {
 	 * @var array
 	 */
 	private $header = array ();
+	/**
+	 * Number of recursive calls
+	 *
+	 * redirect 시에 무한 루프를 방지하기 위한 counter
+	 *
+	 * @access private
+	 * @var integer
+	 */
+	private $reno = 0;
 	// }}}
 
 	// {{{ +-- public __construct ($header = null)
@@ -127,6 +140,7 @@ Class HTTPRelay {
 	}
 	// }}}
 
+	// {{{ +-- public (stdClass) head ($to, $tmout = 60, $httphost = '', $recursion = false)
 	/**
 	 * HTTP/1.1 HEAD 요청
 	 *
@@ -139,9 +153,10 @@ Class HTTPRelay {
 	 * @param  int    $tmout     (optional) timeout 값
 	 * @param  string $httphost  (optional) HTTP/1.1 Host Header. 지정을 하지 않을 경우
 	 *                           $to의 도메인으로 지정됨
+	 * @param  boolean $recursion redirec 처리를 위한 재귀 호출 구분 변수 (1.0.5)
 	 * @sinse 1.0.2
 	 */
-	public function head ($to, $tmout = 60, $httphost = '') {
+	public function head ($to, $tmout = 60, $httphost = '', $recursion = false) {
 		$to = trim ($to);
 		if ( ! $to ) {
 			self::$error = 'Empty request url';
@@ -156,15 +171,15 @@ Class HTTPRelay {
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
 		if ( $this->debug ) {
-			fprintf (STDERR, "** Request URL : %s\n", $to);
-			fprintf (STDERR, "** Request Host: %s\n", $this->header['Host']);
+			fprintf (STDERR, "** Request URL  : %s\n", $to);
+			fprintf (STDERR, "** Request Host : %s\n", $this->header['Host']);
 		}
 
 		# header information
 		$header = self::http_header ();
 
 		if ( $this->debug )
-			fprintf (STDERR, "** Header SET:\n%s\n", print_r ($header, true));
+			fprintf (STDERR, "** Header SET   :\n%s\n", print_r ($header, true));
 
 		curl_setopt ($c, CURLOPT_URL, $to);
 		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
@@ -180,10 +195,10 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
 		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
 		if ( preg_match ('/^https:/', $to) )
-			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 
 		$data = curl_exec ($c);
-		$this->info = curl_getinfo ($c);
+		$info = $this->set_return_info ($c);
 
 		if ( curl_errno ($c) ) {
 			self::$error = curl_error ($c);
@@ -192,6 +207,16 @@ Class HTTPRelay {
 		}
 
 		curl_close ($c);
+
+		if ( $recursion === true )
+			return trim ($data);
+
+		if ( $info->http_code < 400 && $info->redirect_url ) {
+			unset ($data);
+			$info->call_method = __FUNCTION__;
+			if ( ($data = $this->redirect_call ($info, $tmout, $httphost)) === false )
+				return false;
+		}
 
 		$r = new stdClass;
 		$content = preg_split ('/\r\n/', trim ($data));
@@ -209,8 +234,9 @@ Class HTTPRelay {
 
 		return $r;
 	}
+	// }}}
 
-	// {{{ +-- public (string) fetch ($to, $tmout = 60, $httphost = '', $post = null)
+	// {{{ +-- public (string) fetch ($to, $tmout = 60, $httphost = '', $post = null, $recursion = false)
 	/**
 	 * HTML 요청의 결과를 반환한다.
 	 *
@@ -224,8 +250,12 @@ Class HTTPRelay {
 	 * @param  string $httphost  (optional) HTTP/1.1 Host Header. 지정을 하지 않을 경우
 	 *                           $to의 도메인으로 지정됨
 	 * @param  array  $post      (optional) Post방식으로 요청시 전송할 Post data
+	 * @param  boolean $recursion redirec 처리를 위한 재귀 호출 구분 변수 (1.0.5)
 	 */
-	public function fetch ($to, $tmout = 60, $httphost = '', $post = null) {
+	public function fetch ($to, $tmout = 60, $httphost = '', $post = null, $recursion = false) {
+		if ( ! $recursion )
+			$this->reno = 0;
+
 		$to = trim ($to);
 		if ( ! $to ) {
 			self::$error = 'Empty request url';
@@ -240,15 +270,15 @@ Class HTTPRelay {
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
 		if ( $this->debug ) {
-			fprintf (STDERR, "** Request URL : %s\n", $to);
-			fprintf (STDERR, "** Request Host: %s\n", $this->header['Host']);
+			fprintf (STDERR, "** Request URL  : %s\n", $to);
+			fprintf (STDERR, "** Request Host : %s\n", $this->header['Host']);
 		}
 
 		# header information
 		$header = self::http_header ();
 
 		if ( $this->debug )
-			fprintf (STDERR, "** Header SET:\n%s\n", print_r ($header, true));
+			fprintf (STDERR, "** Header SET   :\n%s\n", print_r ($header, true));
 
 		curl_setopt ($c, CURLOPT_URL, $to);
 		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
@@ -264,7 +294,7 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
 		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
 		if ( preg_match ('/^https:/', $to) )
-			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 
 		if ( $post && is_array ($post) ) {
 			curl_setopt ($c, CURLOPT_POST, 1);
@@ -274,7 +304,7 @@ Class HTTPRelay {
 		}
 
 		$data = curl_exec ($c);
-		$this->info = curl_getinfo ($c);
+		$info = $this->set_return_info ($c);
 
 		if ( curl_errno ($c) ) {
 			self::$error = curl_error ($c);
@@ -284,11 +314,18 @@ Class HTTPRelay {
 
 		curl_close ($c);
 
+		if ( $info->http_code < 400 && $info->redirect_url ) {
+			unset ($data);
+			$info->call_method = __FUNCTION__;
+			if ( ($data = $this->redirect_call ($info, $tmout, $httphost, $post)) === false )
+				return false;
+		}
+
 		return trim ($data);
 	}
 	// }}}
 
-	// {{{ +-- public (string) relay ($to, $tmout = 60, $httphost = '')
+	// {{{ +-- public (string) relay ($to, $tmout = 60, $httphost = '', $recursion = false)
 	/**
 	 * HTML 요청을 다른 호스트로 중계를 한다.
 	 *
@@ -301,8 +338,9 @@ Class HTTPRelay {
 	 * @param  int    $tmout     (optional) timeout 값
 	 * @param  string $httphost  (optional) HTTP/1.1 Host Header. 지정을 하지 않을 경우
 	 *                           $to의 도메인으로 지정됨
+	 * @param  boolean $recursion redirec 처리를 위한 재귀 호출 구분 변수 (1.0.5)
 	 */
-	public function relay ($to, $tmout = 60, $httphost = '') {
+	public function relay ($to, $tmout = 60, $httphost = '', $recursion = false) {
 		$to = trim ($to);
 		if ( ! $to ) {
 			self::$error = 'Empty request url';
@@ -318,8 +356,8 @@ Class HTTPRelay {
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
 		if ( $this->debug ) {
-			fprintf (STDERR, "** Request URL : %s\n", $to);
-			fprintf (STDERR, "** Request Host: %s\n", $this->header['Host']);
+			fprintf (STDERR, "** Request URL  : %s\n", $to);
+			fprintf (STDERR, "** Request Host : %s\n", $this->header['Host']);
 		}
 
 		# basic information
@@ -332,7 +370,7 @@ Class HTTPRelay {
 		$header = self::http_header ();
 
 		if ( $this->debug )
-			fprintf (STDERR, "** Header SET:\n%s\n", print_r ($header, true));
+			fprintf (STDERR, "** Header SET   :\n%s\n", print_r ($header, true));
 
 		curl_setopt ($c, CURLOPT_URL, $to . $uri);
 		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
@@ -348,12 +386,12 @@ Class HTTPRelay {
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
 		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
 		if ( preg_match ('/^https:/', $to) )
-			curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 
 		self::relay_post ($c);
 
 		$data = curl_exec ($c);
-		$this->info = curl_getinfo ($c);
+		$info = $this->set_return_info ($c);
 
 		if ( curl_errno ($c) ) {
 			self::$error = curl_error ($c);
@@ -363,7 +401,74 @@ Class HTTPRelay {
 
 		curl_close ($c);
 
+		if ( $info->http_code < 400 && $info->redirect_url ) {
+			unset ($data);
+			$info->call_method = __FUNCTION__;
+			if ( ($data = $this->redirect_call ($info, $tmout, $httphost)) === false )
+				return false;
+		}
+
 		return trim ($data);
+	}
+	// }}}
+
+	// {{{ +-- private (mixed) redirect_call (void)
+	/**
+	 * @access private
+	 * @return mixed
+	 */
+	private function redirect_call () {
+		if ( ++$this->reno > 9 ) {
+			self::$error = 'Overflows 10 times redirectioins!';
+			return false;
+		}
+
+		$arg = func_get_args ();
+
+		$to = &$arg[0]->redirect_url;
+		$narg = array ($to, $arg[1], $arg[2]);
+		if ( $arg[0]->call_method == 'fetch' ) {
+			$narg[3] = $arg[3];
+			$narg[4] = true;
+		} else
+			$narg[3] = true;
+
+		if ( $this->debug )
+			fprintf (STDERR, "\n** Redirect Host: %s\n", $to);
+
+		$this->header['Referer'] = $arg[0]->url;
+
+		$callback_func = array ($this, $arg[0]->call_method);
+		unset ($arg);
+		if ( ($data = call_user_func_array ($callback_func, $narg)) === false )
+			return false;
+
+		return $data;
+	}
+	// }}}
+
+	// {{{ +-- private (stdClass) set_return_info ($c)
+	/**
+	 * @access private
+	 * @return stdClass
+	 */
+	private function set_return_info ($c) {
+		if ( ! is_resource ($c) )
+			return new stdClass;
+
+		$info = curl_getinfo ($c);
+
+		if ( $this->reno == 0 )
+			$this->info = $info;
+		else if ( $this->reno == 1 ) {
+			$old = $this->info;
+			unset ($this->info);
+			$this->info[0] = $old;
+			$this->info[1] = $info;
+		} else
+			$this->info[$this->reno] = $info;
+
+		return (object) $info;
 	}
 	// }}}
 
