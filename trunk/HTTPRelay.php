@@ -139,8 +139,7 @@ Class HTTPRelay {
 		if ( ! is_resource ($c = curl_init ()) )
 			return null;
 
-		if ( $httphost )
-			$this->header['Host'] = $httphost;
+		$this->header['Host'] = self::http_host ($to, $httphost);
 
 		# header information
 		$header = self::http_header ();
@@ -208,8 +207,7 @@ Class HTTPRelay {
 		if ( ! is_resource ($c = curl_init ()) )
 			return null;
 
-		if ( $httphost )
-			$this->header['Host'] = $httphost;
+		$this->header['Host'] = self::http_host ($to, $httphost);
 
 		# header information
 		$header = self::http_header ();
@@ -270,8 +268,7 @@ Class HTTPRelay {
 		if ( ! is_resource ($c = curl_init ()) )
 			return null;
 
-		if ( $httphost )
-			$this->header['Host'] = $httphost;
+		$this->header['Host'] = self::http_host ($to, $httphost);
 
 		# basic information
 		$uri = trim ($_SERVER['QUERY_STRING']);
@@ -326,9 +323,6 @@ Class HTTPRelay {
 
 			self::set_header ($header, $name, $val);
 		}
-
-		if ( ! $this->header['Host'] )
-			self::set_header ($header, 'Host', self::http_host ($to, $httphost));
 
 		if ( ! isset ($this->header['Expect']) )
 			self::set_header ($header, 'Expect', '-');
