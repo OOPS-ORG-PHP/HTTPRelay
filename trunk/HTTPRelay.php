@@ -79,6 +79,7 @@ Class HTTPRelay {
 	 * @var array
 	 */
 	private $header = array ();
+	private $debug = false;
 	// }}}
 
 	// {{{ +-- public __construct ($header = null)
@@ -141,8 +142,16 @@ Class HTTPRelay {
 
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
+		if ( $this->debug ) {
+			fprintf (STDERR, "** Request URL : %s\n", $to);
+			fprintf (STDERR, "** Request Host: %s\n", $this->header['Host']);
+		}
+
 		# header information
 		$header = self::http_header ();
+
+		if ( $this->debug )
+			fprintf (STDERR, "** Header SET:\n%s\n", print_r ($header, true));
 
 		curl_setopt ($c, CURLOPT_URL, $to);
 		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
@@ -209,8 +218,16 @@ Class HTTPRelay {
 
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
+		if ( $this->debug ) {
+			fprintf (STDERR, "** Request URL : %s\n", $to);
+			fprintf (STDERR, "** Request Host: %s\n", $this->header['Host']);
+		}
+
 		# header information
 		$header = self::http_header ();
+
+		if ( $this->debug )
+			fprintf (STDERR, "** Header SET:\n%s\n", print_r ($header, true));
 
 		curl_setopt ($c, CURLOPT_URL, $to);
 		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
@@ -270,6 +287,11 @@ Class HTTPRelay {
 
 		$this->header['Host'] = self::http_host ($to, $httphost);
 
+		if ( $this->debug ) {
+			fprintf (STDERR, "** Request URL : %s\n", $to);
+			fprintf (STDERR, "** Request Host: %s\n", $this->header['Host']);
+		}
+
 		# basic information
 		$uri = trim ($_SERVER['QUERY_STRING']);
 
@@ -278,6 +300,9 @@ Class HTTPRelay {
 
 		# header information
 		$header = self::http_header ();
+
+		if ( $this->debug )
+			fprintf (STDERR, "** Header SET:\n%s\n", print_r ($header, true));
 
 		curl_setopt ($c, CURLOPT_URL, $to . $uri);
 		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
