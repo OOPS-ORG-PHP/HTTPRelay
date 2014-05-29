@@ -99,7 +99,7 @@ Class HTTPRelay {
 	 *
 	 * @access public
 	 * @param array $header (optional) 사용자 정의 HTTP Header
-	 *   - Key는 Header 이름이엉야 하며 '-'는 '_'로 표기한다.
+	 *   - Key는 Header 이름이어야 하며 '-'는 '_'로 표기한다.
 	 *   - Heder값이 없어야 할 경우에는 값을 '-'로 넣어준다.
 	 *   - Key값에 POSTTYPE을 지정할 경우, Post encoding 방식을
 	 *     직접 지정이 가능하다. 이 경우 POSTTYPE은 HTTP Header
