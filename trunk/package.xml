@@ -12,7 +12,7 @@
 		<active>yes</active>
 	</lead>
 	<date>2014-05-30</date>
-	<time>01:30:05</time>
+	<time>02:37:08</time>
 	<version>
 		<release>1.0.5</release>
 		<api>1.0.0</api>
@@ -23,11 +23,13 @@
 	</stability>
 	<license>BSD</license>
 	<notes>* fixed unchanged Host header when recall
-* fixed wrong controll about https protocol
+* fixed wrong control about https protocol
+* support case insensitive about protocol
+* fixed ssl certification verify problem
 </notes>
 	<contents>
 		<dir name="/">
-			<file role="php" md5sum="9e87f9dabefc606e46aa93b72a6851ed" name="HTTPRelay.php" />
+			<file role="php" md5sum="f401ad44c2a97860c8012152fb80f4cb" name="HTTPRelay.php" />
 		</dir>
 	</contents>
 	<dependencies>
@@ -59,7 +61,9 @@
 			<date>2014-05-30</date>
 			<license>BSD</license>
 			<notes>* fixed unchanged Host header when recall
-* fixed wrong controll about https protocol
+* fixed wrong control about https protocol
+* support case insensitive about protocol
+* fixed ssl certification verify problem
 </notes>
 		</release>
 		<release>
