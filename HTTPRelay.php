@@ -65,6 +65,15 @@ Class HTTPRelay {
 	 * @var string
 	 */
 	public $posttype = 'url-encode';
+	/**
+	 * print debug messages to stderr
+	 *
+	 * 디버그 메시지를 stderr로 출력한다.
+	 *
+	 * @access private
+	 * @var array
+	 */
+	public $debug = false;
 	/**#@-*/
 	/**
 	 * User Define Header
@@ -79,7 +88,6 @@ Class HTTPRelay {
 	 * @var array
 	 */
 	private $header = array ();
-	private $debug = false;
 	// }}}
 
 	// {{{ +-- public __construct ($header = null)
