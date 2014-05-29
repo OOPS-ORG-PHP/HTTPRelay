@@ -379,9 +379,9 @@ Class HTTPRelay {
 	 * @param string   전체 URL  
 	 * @param string   HTTP/1.1 Host header 값
 	 */
-	private function http_host ($t, $h) {
+	private function http_host ($t, $h = '') {
 		if ( ! $h) {
-			$src = array ('!^https?://!', '!/.*!');
+			$src = array ('!^https?://!i', '!/.*!');
 			$dsc = array ('', '');
 			$h = preg_replace ($src, $dsc, $t);
 		}
