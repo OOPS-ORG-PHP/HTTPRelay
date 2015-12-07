@@ -74,7 +74,6 @@ Class HTTPRelay {
 	 *
 	 * 디버그 메시지를 stderr로 출력한다.
 	 *
-	 * @access private
 	 * @var array
 	 */
 	public $debug = false;
@@ -154,7 +153,7 @@ Class HTTPRelay {
 	 * @param  string $httphost  (optional) HTTP/1.1 Host Header. 지정을 하지 않을 경우
 	 *                           $to의 도메인으로 지정됨
 	 * @param  boolean $recursion redirec 처리를 위한 재귀 호출 구분 변수 (1.0.5)
-	 * @sinse 1.0.2
+	 * @since 1.0.2
 	 */
 	public function head ($to, $tmout = 60, $httphost = '', $recursion = false) {
 		$to = trim ($to);
