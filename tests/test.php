@@ -17,19 +17,25 @@ if ( $ccwd == 'tests' ) {
 
 require_once 'HTTPRelay.php';
 
-$http = new HTTPRelay;
+try {
+	$http = new HTTPRelay;
 
-$buf = $http->fetch ('https://raw.github.com/twbs/bootstrap/master/bower.json', 3);
+	$buf = $http->fetch ('https://raw.github.com/twbs/bootstrap/master/bower.json', 3);
 
-if ( $buf === false ) {
-	echo 'ERROR:  ' . $http->error . "\n";
-	exit;
+	if ( $buf === false ) {
+		echo 'ERROR:  ' . $http->error . "\n";
+		exit;
+	}
+
+	$buf = json_decode ($buf);
+
+	print_r ($buf);
+	print_r ($http->info);
+} catch ( myException $e ) {
+	echo $e->Message () . "\n";
+	print_r ($e->TraceAsArray ()) . "\n";
+	$e->finalize ();
 }
-
-$buf = json_decode ($buf);
-
-print_r ($buf);
-print_r ($http->info);
 
 /*
  * Local variables:
