@@ -22,7 +22,7 @@ We recommand to install with pear command cause of dependency pear packages.
 [root@host ~]$ pear channel-discover pear.oops.org
 Adding Channel "pear.oops.org" succeeded
 Discovery of channel "pear.oops.org" succeeded
-[root@host ~]$ # add OAUTH2 pear package
+[root@host ~]$ # add HTTPRelay pear package
 [root@host ~]$ pear install oops/HTTPRelay
 downloading HTTPRelay-1.0.5.tgz ...
 Starting to download HTTPRelay-1.0.5.tgz (5,783 bytes)
