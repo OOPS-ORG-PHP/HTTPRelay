@@ -1,6 +1,6 @@
 <?php
 /*
- * Test code for pear_HTTPRelay
+ * Test code for HTTPRelay
  * $Id$
  */
 

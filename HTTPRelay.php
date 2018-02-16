@@ -7,14 +7,13 @@
  * 요청을 다른 서버로 Relay를 하기 위한 기능을 제공한다.
  *
  * 예제:
- * {@example pear_HTTPRelay/tests/test.php}
+ * {@example HTTPRelay/tests/test.php}
  *
  * @category    HTTP
  * @package     HTTPRelay
  * @author      JoungKyun.Kim <http://oops.org>
- * @copyright   (c) 2015 OOPS.org
+ * @copyright   (c) 2018, OOPS.org
  * @license     BSD License
- * @version     SVN: $Id$
  * @link        http://pear.oops.org/package/HTTPRelay
  * @since       File available since release 0.0.1
  * @filesource
@@ -31,7 +30,7 @@ HTTPRelay_REQUIRES ();
  * 요청을 다른 서버로 Relay를 하기 위한 기능을 제공한다.
  *
  * 예제:
- * {@example pear_HTTPRelay/tests/test.php}
+ * {@example HTTPRelay/tests/test.php}
  *
  * @package HTTPRelay
  */
@@ -85,7 +84,7 @@ Class HTTPRelay {
 	 * 배열 키는 Header Name으로 지정하며, 배열값에는 Header의 값을 지정한다.
 	 * 배열값을 '-'으로 지정을 하면, 빈 값으로 처리를 한다.
 	 *
-	 * {@example pear_HTTPRelay/tests/test-relay.php 30 1}
+	 * {@example HTTPRelay/tests/test-relay.php 30 1}
 	 *
 	 * @access private
 	 * @var array
@@ -107,7 +106,7 @@ Class HTTPRelay {
 	 * HTTPRelay 초기화
 	 *
 	 * 예제:
-	 * {@example pear_HTTPRelay/tests/test-relay.php 23 6}
+	 * {@example HTTPRelay/tests/test-relay.php 23 6}
 	 *
 	 * @access public
 	 * @param array $header (optional) 사용자 정의 HTTP Header
@@ -144,7 +143,7 @@ Class HTTPRelay {
 	 * HTTP/1.1 HEAD 요청
 	 *
 	 * 예제:
-	 * {@example pear_HTTPRelay/tests/test-head.php}
+	 * {@example HTTPRelay/tests/test-head.php}
 	 *
 	 * @access public
 	 * @return stdClass 
@@ -240,7 +239,7 @@ Class HTTPRelay {
 	 * HTML 요청의 결과를 반환한다.
 	 *
 	 * 예제:
-	 * {@example pear_HTTPRelay/tests/test.php}
+	 * {@example HTTPRelay/tests/test.php}
 	 *
 	 * @access public
 	 * @return string
@@ -329,7 +328,7 @@ Class HTTPRelay {
 	 * HTML 요청을 다른 호스트로 중계를 한다.
 	 *
 	 * 예제:
-	 * {@example pear_HTTPRelay/tests/test.php}
+	 * {@example HTTPRelay/tests/test.php}
 	 *
 	 * @access public
 	 * @return string
