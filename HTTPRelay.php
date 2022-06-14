@@ -126,6 +126,7 @@ Class HTTPRelay {
 		if ( $header['POSTTYPE'] ) {
 			switch ($header['POSTTYPE']) {
 				case 'form-data' :
+				case 'json' :
 				case 'url-encode' :
 					$this->posttype = $header['POSTTYPE'];
 			}
@@ -275,9 +276,6 @@ Class HTTPRelay {
 		# header information
 		$header = self::http_header ();
 
-		if ( $this->debug )
-			fprintf (STDERR, "** Header SET   :\n%s\n", print_r ($header, true));
-
 		curl_setopt ($c, CURLOPT_URL, $to);
 		curl_setopt ($c, CURLOPT_TIMEOUT, $tmout);
 		curl_setopt ($c, CURLOPT_NOPROGRESS, 1);
@@ -288,18 +286,31 @@ Class HTTPRelay {
 		);
 		curl_setopt ($c, CURLOPT_HEADER, 0);
 		curl_setopt ($c, CURLOPT_NOBODY, 0);
-		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
 		curl_setopt ($c, CURLOPT_FAILONERROR, 1);
 		curl_setopt ($c, CURLINFO_HEADER_OUT, 1);
 		if ( preg_match ('/^https:/', $to) )
 			curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 
-		if ( $post && is_array ($post) ) {
+		if ( $post ) {
 			curl_setopt ($c, CURLOPT_POST, 1);
-			if ( $this->posttype == 'url-encode' )
-				$post = http_build_query ($post);
+			if ( is_array ($post) ) {
+				if ( $this->posttype == 'json' ) {
+					self::set_header ($header, 'Content-Type', 'application/json');
+					$post = json_encode ($post);
+				} else if ( $this->posttype == 'url-encode' )
+					$post = http_build_query ($post);
+			} else {
+				// strings are json format, change Content-Type to 'application/json'
+				if ( json_decode ($post) != NULL )
+					self::set_header ($header, 'Content-Type', 'application/json');
+			}
 			curl_setopt ($c, CURLOPT_POSTFIELDS, $post);
 		}
+
+		curl_setopt ($c, CURLOPT_HTTPHEADER, $header);
+
+		if ( $this->debug )
+			fprintf (STDERR, "** Header SET   :\n%s\n", print_r ($header, true));
 
 		$data = curl_exec ($c);
 		$info = $this->set_return_info ($c);
