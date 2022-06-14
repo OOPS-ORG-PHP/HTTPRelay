@@ -494,8 +494,6 @@ Class HTTPRelay {
 		if ( ! $this->header['Connection'] )
 			self::set_header ($header, 'Connection', 'close');
 
-		if ( $relay ) {
-		}
 		self::client_ip_set ($header);
 
 		return $header;
