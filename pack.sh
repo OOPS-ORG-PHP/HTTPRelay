@@ -1,5 +1,4 @@
 #!/bin/sh
-# $Id$
 
 cp -af package.xml.tmpl package.xml
 list=$(grep "md5sum" ./package.xml | sed 's/.*"@\|@".*//g')
@@ -18,4 +17,4 @@ perl -pi -e "s!\@curtime\@!${curtime}!g" ./package.xml
 
 #phpdoc -s on -o HTML:Smarty:PHP -f edb.php,EDB/*.php -t docs
 
-[ -z "$1" ] && pear package
+[[ -z $1 ]] && pear package

@@ -523,6 +523,15 @@ Class HTTPRelay {
 
 		$d = preg_replace ('/_/', '-', $d);
 
+		if ( sizeof ($h) > 0 ) {
+			foreach ( $h as $key => $val ) {
+				if ( preg_match ("/^{$d}:\s+/", $val) ) {
+					$h[$key] = $d . ': ' . $v;
+					return;
+				}
+			}
+		}
+
 		$h[] = $d . ': ' . $v;
 	}
 	// }}}
